@@ -13,8 +13,6 @@ import (
 const version = "1.0.0"
 const cssVersion = "1"
 
-// create a type config information of our applciation
-
 type config struct {
 	port int
 	env  string
@@ -28,14 +26,10 @@ type config struct {
 	}
 }
 
-// config type for data items
-
 type application struct {
-	config config
-	// loggers
-	infoLog  *log.Logger
-	errorLog *log.Logger
-	// template cache
+	config        config
+	infoLog       *log.Logger
+	errorLog      *log.Logger
 	templateCache map[string]*template.Template
 	version       string
 }
@@ -49,24 +43,21 @@ func (app *application) serve() error {
 		ReadHeaderTimeout: 5 * time.Second,
 		WriteTimeout:      5 * time.Second,
 	}
-	app.infoLog.Println("Starting HTTP server in %s mode  on port %d", app.config.env, app.config.port)
+
+	app.infoLog.Println("Starting HTTP server in %s mode on port %d", app.config.env, app.config.port)
 
 	return srv.ListenAndServe()
-
 }
 
 func main() {
-	// create a variable of type config
-	// populate variable with information
-
 	var cfg config
 
 	flag.IntVar(&cfg.port, "port", 4000, "Server port to listen on")
-	flag.StringVar(&cfg.env, "port", "development", "Application environment {development|production}")
+	flag.StringVar(&cfg.env, "env", "development", "Application enviornment {development|production}")
 	flag.StringVar(&cfg.api, "api", "http://localhost:4001", "URL to api")
+
 	flag.Parse()
-	// get this stripe secret key and stripe publishable key
-	//
+
 	cfg.stripe.key = os.Getenv("STRIPE_KEY")
 	cfg.stripe.secret = os.Getenv("STRIPE_SECRET")
 
@@ -82,12 +73,10 @@ func main() {
 		templateCache: tc,
 		version:       version,
 	}
-	// create the web server
-	err := app.serve()
 
+	err := app.serve()
 	if err != nil {
 		app.errorLog.Println(err)
 		log.Fatal(err)
 	}
-
 }
