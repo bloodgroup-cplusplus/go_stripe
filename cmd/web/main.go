@@ -83,5 +83,11 @@ func main() {
 		version:       version,
 	}
 	// create the web server
+	err := app.serve()
+
+	if err != nil {
+		app.errorLog.Println(err)
+		log.Fatal(err)
+	}
 
 }
